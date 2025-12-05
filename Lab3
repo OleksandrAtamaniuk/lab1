@@ -1,1 +1,398 @@
+___________________________________ 3 ЛАБОРАТОРНА ______________________________
+___________________________________ 1 завдання ______________________________
+#include <iostream>     // Підключення бібліотеки для роботи з вводом/виводом
+using namespace std;    // Використання стандартного простору імен
 
+// Оголошення класу Time
+class Time {
+private:
+    int h;  // Година (0–23)
+    int m;  // Хвилини (0–59)
+    int s;  // Секунди (0–59)
+
+public:
+    Time() {           // Конструктор без параметрів
+        h = 0;         // Година = 0
+        m = 0;         // Хвилини = 0
+        s = 0;         // Секунди = 0
+    }
+
+    Time(int a, int b, int c) { // Конструктор з параметрами
+        setHour(a);             // Встановлення години
+        setMinute(b);           // Встановлення хвилин
+        setSecond(c);           // Встановлення секунд
+    }
+
+    void setHour(int a) {          // Встановлення години
+        if(a >= 0 && a < 24)       // Якщо в діапазоні 0–23
+            h = a;                 // Записати значення
+        else
+            h = 0;                 // Інакше встановити 0
+    }
+
+    void setMinute(int b) {        // Встановлення хвилин
+        if(b >= 0 && b < 60)       // Якщо в межах 0–59
+            m = b;                 // Записати
+        else
+            m = 0;                 // Інакше 0
+    }
+
+    void setSecond(int c) {        // Встановлення секунд
+        if(c >= 0 && c < 60)       // Перевірка діапазону
+            s = c;                 // Записати
+        else
+            s = 0;                 // Невірне – обнулити
+    }
+
+    int getHour() { return h; }    // Повернення години
+    int getMinute() { return m; }  // Повернення хвилин
+    int getSecond() { return s; }  // Повернення секунд
+
+    void print1() {         // Вивід у форматі 24-годин
+        cout << h << " годин " << m << " хвилин " << s << " секунд" << endl;
+    }
+
+    void print2() {         // Вивід у форматі 12-годин + a.m./p.m.
+        int hh = h;         // Копія години
+        string ampm = "a.m."; // За замовчуванням – ранок
+
+        if(h == 0)          // Якщо 00:xx
+            hh = 12;        // Показати як 12 a.m.
+        else if(h == 12)    // Якщо 12:xx
+            ampm = "p.m.";  // Це вже день
+        else if(h > 12) {   // Якщо більше 12
+            hh = h - 12;    // Перевести в 12-годинний формат
+            ampm = "p.m.";  // Вказати p.m.
+        }
+
+        cout << hh << " " << ampm << " " << m << " хвилин " << s << " секунд" << endl;
+    }
+};
+
+int main() {
+    cout << "=== Тест конструктора без параметрів ===" << endl; // Інформаційне повідомлення
+    Time t1;       // Створення об'єкта з часом 00:00:00
+    t1.print1();   // Вивід у 24-годинному форматі
+
+    cout << "\n=== Тест конструктора з параметрами (16:18:03) ===" << endl; // Повідомлення
+    Time t2(16, 18, 3); // Створення об'єкта з конкретним часом
+    t2.print1();        // Вивід у форматі “16 годин...”
+    t2.print2();        // Вивід у форматі “4 p.m....”
+
+    cout << "\n=== Перевірка set-функцій ===" << endl; // Повідомлення
+    t1.setHour(23);   // Встановлення години
+    t1.setMinute(59); // Встановлення хвилин
+    t1.setSecond(50); // Встановлення секунд
+    t1.print1();      // Вивід оновленого часу
+
+    cout << "\n=== Перевірка get-функцій ===" << endl; // Повідомлення
+    cout << "Година: " << t1.getHour()  // Вивід години
+         << ", Хвилина: " << t1.getMinute() // Вивід хвилин
+         << ", Секунда: " << t1.getSecond() << endl; // Вивід секунд
+
+    return 0; // Завершення програми
+}
+
+___________________________________ 2 завдання ______________________________
+#include <iostream>          // Підключення бібліотеки для вводу/виводу
+using namespace std;         // Використання стандартного простору імен
+
+class Vector {               // Оголошення класу Vector
+private:
+    float* a;                // Вказівник на динамічний масив елементів
+    int n;                   // Кількість елементів вектора
+    int ok;                  // Код стану (0 - все ок, 1 - вихід за межі, 2 - помилка пам'яті)
+    static int count;        // Статичний лічильник об'єктів
+
+public:
+    Vector() {               // Конструктор без параметрів
+        n = 1;               // Один елемент
+        a = new float[n];    // Виділення пам'яті
+        if(!a) ok=2;         // Якщо пам'ять не виділилась
+        else { a[0]=0; ok=0; }
+        count++;              // Збільшення лічильника об'єктів
+    }
+
+    Vector(int size) {        // Конструктор з одним параметром
+        n = size;
+        a = new float[n];
+        if(!a) ok=2;
+        else { for(int i=0;i<n;i++) a[i]=0; ok=0; }
+        count++;
+    }
+
+    Vector(int size, float val) {  // Конструктор з двома параметрами
+        n = size;
+        a = new float[n];
+        if(!a) ok=2;
+        else { for(int i=0;i<n;i++) a[i]=val; ok=0; }
+        count++;
+    }
+
+    Vector(const Vector& v) {   // Конструктор копій
+        n = v.n;
+        ok = v.ok;
+        a = new float[n];
+        if(!a) ok=2;
+        else for(int i=0;i<n;i++) a[i]=v.a[i];
+        count++;
+    }
+
+    Vector& operator=(const Vector& v) {  // Оператор присвоєння
+        if(this==&v) return *this;         // Захист від самоприсвоєння
+        delete[] a;                        // Звільнення попередньої пам'яті
+        n=v.n;
+        ok=v.ok;
+        a = new float[n];
+        if(!a) ok=2;
+        else for(int i=0;i<n;i++) a[i]=v.a[i];
+        return *this;
+    }
+
+    ~Vector() {                 // Деструктор
+        delete[] a;             // Звільнення пам'яті
+        count--;                // Зменшення лічильника об'єктів
+    }
+
+    void set(int i, float x=0) {  // Присвоєння значення елементу
+        if(i>=0 && i<n) { a[i]=x; ok=0; }
+        else ok=1;
+    }
+
+    float get(int i) {           // Отримання значення елементу
+        if(i>=0 && i<n) { ok=0; return a[i]; }
+        ok=1;
+        return 0;
+    }
+
+    void print() {               // Друк вектора
+        for(int i=0;i<n;i++) cout<<a[i]<<" ";
+        cout<<endl;
+    }
+
+    Vector add(const Vector& v) { // Додавання векторів
+        Vector t(n);
+        if(n!=v.n) { t.ok=1; return t; }
+        for(int i=0;i<n;i++) t.a[i]=a[i]+v.a[i];
+        return t;
+    }
+
+    Vector sub(const Vector& v) { // Віднімання векторів
+        Vector t(n);
+        if(n!=v.n) { t.ok=1; return t; }
+        for(int i=0;i<n;i++) t.a[i]=a[i]-v.a[i];
+        return t;
+    }
+
+    Vector mul(long k) {          // Множення на ціле типу long
+        Vector t(n);
+        for(int i=0;i<n;i++) t.a[i]=a[i]*k;
+        return t;
+    }
+
+    bool more(const Vector& v) { // Порівняння "більше"
+        if(n!=v.n) { ok=1; return false; }
+        float s1=0,s2=0;
+        for(int i=0;i<n;i++) s1+=a[i];
+        for(int i=0;i<n;i++) s2+=v.a[i];
+        return s1>s2;
+    }
+
+    bool less(const Vector& v) { // Порівняння "менше"
+        if(n!=v.n) { ok=1; return false; }
+        float s1=0,s2=0;
+        for(int i=0;i<n;i++) s1+=a[i];
+        for(int i=0;i<n;i++) s2+=v.a[i];
+        return s1<s2;
+    }
+
+    bool eq(const Vector& v) {   // Порівняння "рівно"
+        if(n!=v.n) return false;
+        for(int i=0;i<n;i++) if(a[i]!=v.a[i]) return false;
+        return true;
+    }
+
+    int getState() { return ok; }    // Отримати стан об'єкта
+    static int getCount() { return count; } // Отримати число об'єктів
+    int size() { return n; }         // Повернути розмір вектора
+};
+
+int Vector::count=0; // Ініціалізація статичного лічильника
+
+// --- Тестування ---
+int main() {
+    Vector v1(3,2);           // Конструктор з двома параметрами
+    Vector v2(3,5);           // Конструктор з двома параметрами
+
+    cout << "v1: "; v1.print();  
+    cout << "v2: "; v2.print();
+
+    Vector v3 = v1.add(v2);   // Додавання
+    cout << "v1+v2: "; v3.print();
+
+    Vector v4 = v2.sub(v1);   // Віднімання
+    cout << "v2-v1: "; v4.print();
+
+    Vector v5 = v1.mul(3);    // Множення на long
+    cout << "v1*3: "; v5.print();
+
+    cout << "v1>v2: " << v1.more(v2) << endl;   // Порівняння
+    cout << "v1<v2: " << v1.less(v2) << endl;
+    cout << "v1==v2: " << v1.eq(v2) << endl;
+
+    cout << "Стан v1: " << v1.getState() << ", число об'єктів: " << Vector::getCount() << endl;
+
+    return 0;
+}
+
+___________________________________ 3 завдання ______________________________
+#include <iostream>          // Підключення бібліотеки для вводу/виводу
+using namespace std;         // Використання стандартного простору імен
+
+class Vector {               // Оголошення класу Vector
+private:
+    float* a;                // Вказівник на динамічний масив елементів
+    int n;                   // Кількість елементів вектора
+    int ok;                  // Код стану (0 - все ок, 1 - вихід за межі, 2 - помилка пам'яті)
+    static int count;        // Статичний лічильник об'єктів
+
+public:
+    Vector() {               // Конструктор без параметрів
+        n = 1;               // Один елемент
+        a = new float[n];    // Виділення пам'яті
+        if(!a) ok=2;         // Якщо пам'ять не виділилась
+        else { a[0]=0; ok=0; }
+        count++;              // Збільшення лічильника об'єктів
+    }
+
+    Vector(int size) {        // Конструктор з одним параметром
+        n = size;
+        a = new float[n];
+        if(!a) ok=2;
+        else { for(int i=0;i<n;i++) a[i]=0; ok=0; }
+        count++;
+    }
+
+    Vector(int size, float val) {  // Конструктор з двома параметрами
+        n = size;
+        a = new float[n];
+        if(!a) ok=2;
+        else { for(int i=0;i<n;i++) a[i]=val; ok=0; }
+        count++;
+    }
+
+    Vector(const Vector& v) {   // Конструктор копій
+        n = v.n;
+        ok = v.ok;
+        a = new float[n];
+        if(!a) ok=2;
+        else for(int i=0;i<n;i++) a[i]=v.a[i];
+        count++;
+    }
+
+    Vector& operator=(const Vector& v) {  // Оператор присвоєння
+        if(this==&v) return *this;         // Захист від самоприсвоєння
+        delete[] a;                        // Звільнення попередньої пам'яті
+        n=v.n;
+        ok=v.ok;
+        a = new float[n];
+        if(!a) ok=2;
+        else for(int i=0;i<n;i++) a[i]=v.a[i];
+        return *this;
+    }
+
+    ~Vector() {                 // Деструктор
+        delete[] a;             // Звільнення пам'яті
+        count--;                // Зменшення лічильника об'єктів
+    }
+
+    void set(int i, float x=0) {  // Присвоєння значення елементу
+        if(i>=0 && i<n) { a[i]=x; ok=0; }
+        else ok=1;
+    }
+
+    float get(int i) {           // Отримання значення елементу
+        if(i>=0 && i<n) { ok=0; return a[i]; }
+        ok=1;
+        return 0;
+    }
+
+    void print() {               // Друк вектора
+        for(int i=0;i<n;i++) cout<<a[i]<<" ";
+        cout<<endl;
+    }
+
+    Vector add(const Vector& v) { // Додавання векторів
+        Vector t(n);
+        if(n!=v.n) { t.ok=1; return t; }
+        for(int i=0;i<n;i++) t.a[i]=a[i]+v.a[i];
+        return t;
+    }
+
+    Vector sub(const Vector& v) { // Віднімання векторів
+        Vector t(n);
+        if(n!=v.n) { t.ok=1; return t; }
+        for(int i=0;i<n;i++) t.a[i]=a[i]-v.a[i];
+        return t;
+    }
+
+    Vector mul(long k) {          // Множення на ціле типу long
+        Vector t(n);
+        for(int i=0;i<n;i++) t.a[i]=a[i]*k;
+        return t;
+    }
+
+    bool more(const Vector& v) { // Порівняння "більше"
+        if(n!=v.n) { ok=1; return false; }
+        float s1=0,s2=0;
+        for(int i=0;i<n;i++) s1+=a[i];
+        for(int i=0;i<n;i++) s2+=v.a[i];
+        return s1>s2;
+    }
+
+    bool less(const Vector& v) { // Порівняння "менше"
+        if(n!=v.n) { ok=1; return false; }
+        float s1=0,s2=0;
+        for(int i=0;i<n;i++) s1+=a[i];
+        for(int i=0;i<n;i++) s2+=v.a[i];
+        return s1<s2;
+    }
+
+    bool eq(const Vector& v) {   // Порівняння "рівно"
+        if(n!=v.n) return false;
+        for(int i=0;i<n;i++) if(a[i]!=v.a[i]) return false;
+        return true;
+    }
+
+    int getState() { return ok; }    // Отримати стан об'єкта
+    static int getCount() { return count; } // Отримати число об'єктів
+    int size() { return n; }         // Повернути розмір вектора
+};
+
+int Vector::count=0; // Ініціалізація статичного лічильника
+
+// --- Тестування ---
+int main() {
+    Vector v1(3,2);           // Конструктор з двома параметрами
+    Vector v2(3,5);           // Конструктор з двома параметрами
+
+    cout << "v1: "; v1.print();  
+    cout << "v2: "; v2.print();
+
+    Vector v3 = v1.add(v2);   // Додавання
+    cout << "v1+v2: "; v3.print();
+
+    Vector v4 = v2.sub(v1);   // Віднімання
+    cout << "v2-v1: "; v4.print();
+
+    Vector v5 = v1.mul(3);    // Множення на long
+    cout << "v1*3: "; v5.print();
+
+    cout << "v1>v2: " << v1.more(v2) << endl;   // Порівняння
+    cout << "v1<v2: " << v1.less(v2) << endl;
+    cout << "v1==v2: " << v1.eq(v2) << endl;
+
+    cout << "Стан v1: " << v1.getState() << ", число об'єктів: " << Vector::getCount() << endl;
+
+    return 0;
+}
